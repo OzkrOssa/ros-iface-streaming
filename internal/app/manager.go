@@ -68,7 +68,6 @@ func (m *Manager) HandleConnection(ctx context.Context) error {
 		for {
 			_, err := m.ws.ReadMessage()
 			if err != nil {
-				slog.Error("Error reading message", "error", err)
 				return
 			}
 		}
