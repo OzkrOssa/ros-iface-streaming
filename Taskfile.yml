@@ -3,5 +3,12 @@
 version: '3'
 
 tasks:
+  default:
+    cmds:
+      - go mod download
+      - go mod tidy
+      - go install github.com/air-verse/air@latest
+
   dev:
+    desc: Run the server in development mode with hot reload
     cmd: air
