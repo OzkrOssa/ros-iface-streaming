@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strconv"
 	"strings"
 
@@ -86,7 +87,7 @@ func (m *Mikrotik) GetStreamingTraffic(ctx context.Context, iface string) (chan 
 					Rx:    rx,
 				}
 			case err := <-errChan:
-				fmt.Printf("Error en la conexión: %v\n", err)
+				slog.Error("Error in connection", "error", err)
 				return
 			}
 		}

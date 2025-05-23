@@ -1,7 +1,7 @@
 package wsactor
 
 import (
-	"log"
+	"log/slog"
 
 	"github.com/OzkrOssa/ros-iface-streamer/internal/domain"
 	"github.com/anthdm/hollywood/actor"
@@ -18,7 +18,13 @@ func New(wsclient domain.WsClient) actor.Producer {
 }
 
 func (w *wsActor) Receive(ctx *actor.Context) {
+	remote := w.wsclient.CurrentConnection().RemoteAddr().String()
+	actorID := ctx.PID().ID
 	switch msg := ctx.Message().(type) {
+	case actor.Started:
+		slog.Info("websocket actor started listener", "remote", remote, "actor", actorID)
+	case actor.Stopped:
+		slog.Info("websocket actor stopped listener", "remote", remote, "actor", actorID)
 	case *domain.Traffic:
 		err := w.wsclient.WriteJSON(
 			map[string]any{
@@ -28,7 +34,8 @@ func (w *wsActor) Receive(ctx *actor.Context) {
 			})
 
 		if err != nil {
-			log.Println(err)
+			slog.Error("Error writing JSON", "error", err)
+			return
 		}
 	}
 }

@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
-
 	"slices"
+	"strings"
 
 	"github.com/OzkrOssa/ros-iface-streamer/internal/presentation"
 	"github.com/OzkrOssa/ros-iface-streamer/pkg/config"
