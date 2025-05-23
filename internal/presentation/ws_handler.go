@@ -11,15 +11,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-func TrafficStreamerHandler(ctx context.Context, config *config.RouterOS) func(w http.ResponseWriter, r *http.Request) {
+func TrafficStreamerHandler(ctx context.Context, upgrader websocket.Upgrader, config *config.RouterOS) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ws := ws.New(upgrader)
 		ws.Upgrader(w, r)
@@ -27,5 +19,6 @@ func TrafficStreamerHandler(ctx context.Context, config *config.RouterOS) func(w
 		mkt := mikrotik.New(config)
 		manager := app.NewManager(mkt, ws)
 		manager.HandleConnection(ctx)
+
 	}
 }

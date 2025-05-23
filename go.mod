@@ -8,11 +8,15 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
+	github.com/samber/slog-multi v1.4.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
 	github.com/DataDog/gostackparse v0.7.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
+	github.com/samber/lo v1.49.1 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 )
