@@ -1,0 +1,5 @@
+scrape_configs:
+  - job_name: 'ros-iface-streaming'
+    static_configs:
+      - targets: ['ros-iface-streaming:8080']
+    metrics_path: /metrics

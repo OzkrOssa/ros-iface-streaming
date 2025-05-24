@@ -15,6 +15,7 @@ import (
 	"github.com/OzkrOssa/ros-iface-streamer/pkg/config/logger"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -42,6 +43,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/ws", presentation.TrafficStreamerHandler(ctx, upgrader, config.Ros))
+	r.Path("/metrics").Handler(promhttp.Handler())
 
 	listenAddr := fmt.Sprintf("%s:%s", config.Http.URL, config.Http.Port)
 
