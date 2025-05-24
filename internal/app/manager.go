@@ -6,8 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/OzkrOssa/ros-iface-streamer/internal/domain"
-	wsactor "github.com/OzkrOssa/ros-iface-streamer/internal/infra/ws_actor"
-	"github.com/anthdm/hollywood/actor"
+	"github.com/google/uuid"
 )
 
 type Manager struct {
@@ -44,20 +43,18 @@ func (m *Manager) HandleConnection(ctx context.Context) error {
 		return err
 	}
 
-	engine, err := actor.NewEngine(actor.NewEngineConfig())
-	if err != nil {
-		slog.Error("Error creating engine", "error", err)
+	if payload.Host == "" || payload.Iface == "" {
+		_ = m.ws.WriteErrorMessage([]byte("invalid playload"))
+		_ = m.ws.Close()
+		slog.Error("Invalid playload", "payload", payload)
 		return err
 	}
 
-	wsactors := wsactor.New(m.ws)
-	pid := engine.Spawn(wsactors, "ws-actor")
-
-	m.ws.AddClient(pid)
+	clientConn := m.ws.AddClient(uuid.New().String())
+	slog.Info("New connection", "remote", m.ws.CurrentConnection().RemoteAddr(), "connection", clientConn)
 
 	if err := m.mkt.Connect(payload.Host); err != nil {
 		_ = m.ws.Close()
-		engine.Stop(pid)
 		slog.Error("Error connecting to mikrotik", "error", err)
 		return err
 	}
@@ -82,14 +79,22 @@ func (m *Manager) HandleConnection(ctx context.Context) error {
 		}
 
 		for t := range traffic {
-			engine.Send(pid, t)
+			err := m.ws.WriteJSON(
+				map[string]any{
+					"iface": t.Iface,
+					"rx":    t.Rx,
+					"tx":    t.Tx,
+				})
+			if err != nil {
+				slog.Error("Error writing JSON", "error", err)
+				return
+			}
 		}
 	}()
 
 	<-ctx.Done()
-	engine.Stop(pid)
 	m.ws.DeleteClient(m.ws.CurrentConnection())
 	_ = m.ws.Close()
-	slog.Info("Connection closed")
+	slog.Info("Connection closed", "remote", m.ws.CurrentConnection().RemoteAddr())
 	return nil
 }
