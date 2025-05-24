@@ -23,7 +23,6 @@ ROUTEROS_PASS=""
 
 # Usage
 - task dev
-- curl -X POST http://localhost:8080/ws -H "Origin: http://localhost:8080" -d '{"host": "192.168.88.1", "iface": "ether1"}'
 
 # Response
 - {"iface": "ether1", "rx": 123456, "tx": 123456}
